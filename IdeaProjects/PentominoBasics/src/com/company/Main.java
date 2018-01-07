@@ -6,12 +6,12 @@ import java.util.Scanner;
 public class Main {
 
     private static Pentomino[] pentominoes;
-    private static char[][] board;//globally defining the board
+    private static char[][][] cargoSpace;//globally defining the cargoSpace
     private static int solutionsCount;
-    private static boolean[] usedPentominoes;
     private static int emptyCells;
     private static int width;
     private static int height;
+    private static int length;
     private static boolean solutionFound;
     private static boolean countingNeeded =false;
 
@@ -20,7 +20,7 @@ public class Main {
 
         //Start input
         Scanner sc = new Scanner(System.in);
-        System.out.println("Width and height of the board: ");
+        System.out.println("Width, height and length of the cargoSpace: ");
         String boardSize = sc.nextLine();
         String[] dimension = boardSize.split(" ");
 
@@ -41,15 +41,8 @@ public class Main {
         }
         System.out.println("Write letters without spaces:  ");
         String input = sc.nextLine();
-        input = input.toLowerCase();
 
-        char[] inputArray = input.toCharArray();
-
-        if(!boardValidation(height, width, inputArray))
-        {
-            System.out.println("There are not enough pentominoes. The solution cannot be found");
-            return;
-        }
+        char[] inputArray = input.toLowerCase().toCharArray();
 
         while(!pentominoesValidation(inputArray)) {
             System.out.println("Invalid input. Try again:");
@@ -61,28 +54,43 @@ public class Main {
         System.out.println("Do you want to see just one solution or count all the solutions?");
         System.out.println("type '1' for one solution");
         System.out.println("type 'count' for counting (this could take around 15 seconds in worst cases)");
-        String shouldCouldString = sc.nextLine();
-        if(Objects.equals(shouldCouldString, "count"))
+        String command = sc.nextLine();
+        if(Objects.equals(command, "count"))
         {
             countingNeeded = true;
         }
 
         //End input
 
-        usedPentominoes = new boolean[input.length()];
-
-        board = new char[height][width];
+        cargoSpace = new char[height][width][length];
         for (int l = 0; l < height; l++) {
             for (int j = 0; j < width; j++) {
-                board[l][j] = ' ';
+                for (int i = 0; i < length; i++) {
+                    cargoSpace[l][j][i] = ' ';
+                }
             }
         }
 
         pentominoes = PentominoFactory.createLetters(inputArray);
+        int [][][] shape;
+        for(Pentomino pent: pentominoes)
+        {
+            System.out.println("new shape");
+            shape = pent.getPositioningInSpace();
+            for (int i = 0; i < shape.length; i++) {
+                System.out.println("new plane");
+                for (int j = 0; j < shape[0].length; j++) {
+                    for (int k = 0; k < shape[0][0].length; k++) {
+                        System.out.print(shape[i][j][k] + " ");
+                    }
+                    System.out.println();
+                }
+            }
+        }
 
         long startTime = System.nanoTime();
 
-        searchSolution(0 ,0);
+        //searchSolution(0 ,0, 0);
 
         long endTime = System.nanoTime();
 
@@ -95,14 +103,14 @@ public class Main {
 
         if(solutionFound)
         {
-            if(rotateBoard)
+            /*if(rotateBoard)
             {
-                board = rotateBoard(board);
-                height = board.length;
-                width = board[0].length;
-            }
+                cargoSpace = rotateBoard(cargoSpace);
+                height = cargoSpace.length;
+                width = cargoSpace[0].length;
+            }*/
 
-            Display.disp(board);
+            //Display.disp(cargoSpace);
         }
         else {
             System.out.println("No possible solution");
@@ -117,48 +125,48 @@ public class Main {
      * @param x coordinate of x axis
      * @param y coordinate of y axis
      */
-    private static void searchSolution(int x, int y) {
+    private static void searchSolution(int x, int y, int z) {
 
         for (Pentomino currentPentomino : pentominoes) {
-            int pentominoPos = currentPentomino.getBooleanArrayPos();
-            if (usedPentominoes[pentominoPos]) {
-                continue;
-            }
 
-            boolean currentFits = isCurrentFits(x, y, currentPentomino);
+            boolean currentFits = isCurrentFits(x, y, z, currentPentomino);
 
             if (currentFits) {
-                putPentominoOnTheBoard(x, y, currentPentomino);
+                putPentominoOnTheBoard(x, y, z, currentPentomino);
 
-                if (impossibleCase()) {
-                    removePentomino(x, y, currentPentomino);
+                /*if (impossibleCase()) {
+                    removePentomino(x, y, z , currentPentomino);
                     continue;
-                }
+                }*/
 
                 boolean freeCellFound = false;
 
+
                 for (int l = 0; l < height; l++) { //checking for free cell
                     for (int j = 0; j < width; j++) {
-                        if (board[l][j] == ' '){
+                        for (int i = 0; i < length; i++) {
 
-                            freeCellFound = true;
-                            searchSolution(l, j);/// go into the recursion
+                            if (cargoSpace[l][j][i] == ' ') {
 
-                            if (solutionFound && !countingNeeded) //if the condition is true the program will go out of all recursions
-                            {
-                                return;
+                                freeCellFound = true;
+                                searchSolution(l, j, i);/// go into the recursion
+
+                                if (solutionFound && !countingNeeded) //if the condition is true the program will go out of all recursions
+                                {
+                                    return;
+                                }
+                                break;/// when the method executes, the recursion has stopped and we should stop iterating the cargoSpace
                             }
-                            break;/// when the method executes, the recursion has stopped and we should stop iterating the board
                         }
+                        if (freeCellFound) break;
                     }
-                    if (freeCellFound) break;
                 }
 
                 if (!freeCellFound) {
                     if (countingNeeded) {
                         for (int l = 0; l < height; l++) {
                             for (int j = 0; j < width; j++) {
-                                System.out.print(board[l][j] + " ");
+                                System.out.print(cargoSpace[l][j] + " ");
                             }
                             System.out.println();
                         }
@@ -170,7 +178,7 @@ public class Main {
                     }
                 }
 
-                removePentomino(x, y, currentPentomino); //backtracking
+                removePentomino(x, y,z, currentPentomino); //backtracking
 
             }
 
@@ -178,89 +186,114 @@ public class Main {
     }
 
     /**
-     * The method gets the shape of the current pentomino, puts it on the board and assign the current cell as filled
+     * The method gets the shape of the current pentomino, puts it on the cargoSpace and assign the current cell as filled
      * The method also makes the position of the pentomino in boolean array true, so that it cannot be used again
      * @param x coordinate of x axis
      * @param y coordinate of y axis
      * @param pentomino the current pentomino
      */
-    private static void putPentominoOnTheBoard(int x, int y, Pentomino pentomino) {
+    private static void putPentominoOnTheBoard(int x, int y, int z, Pentomino pentomino) {
         int xPosition;
         int yPosition;
+        int zPosition;
 
-        int rows = pentomino.getLetterMat().length;
-        int cols = pentomino.getLetterMat()[0].length;
+        int planes = pentomino.getPositioningInSpace().length;
+        int rows = pentomino.getPositioningInSpace()[0].length;
+        int cols = pentomino.getPositioningInSpace()[0][0].length;
 
-        int startCol = pentomino.colIndexOfStartPoint();
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < cols; j++) {
-                if (pentomino.getLetterMat()[i][j] == 1) {
-                    xPosition = x + i;
-                    yPosition = y + j - startCol;
 
-                    board[xPosition][yPosition] = pentomino.getCharacter();
+        int startX = pentomino.xIndexOfStartPoint();
+        int startY = pentomino.yIndexOfStartPoint();
+        int startZ = pentomino.zIndexOfStartPoint();
+
+        for (int i = 0; i < planes; i++) {
+            for (int j = 0; j < rows; j++) {
+                for (int k = 0; k < cols; k++) {
+                    if (pentomino.getPositioningInSpace()[i][j][k] == 1) {
+                        xPosition = x + i - startX;
+                        yPosition = y + j - startY;
+                        zPosition = z + k - startZ;///check if working
+                        cargoSpace[zPosition][xPosition][yPosition] = pentomino.getType();
+                    }
                 }
+
             }
         }
-        usedPentominoes[pentomino.getBooleanArrayPos()] = true;
     }
 
     /**
-     * The method gets the shape of the current pentomino and only checks if it could fit on the board.
+     * The method gets the shape of the current pentomino and only checks if it could fit on the cargoSpace.
      * @param x coordinate of x axis
      * @param y coordinate of y axis
      * @param pentomino the current pentomino
      */
-    private static boolean isCurrentFits(int x, int y, Pentomino pentomino) {
+    private static boolean isCurrentFits(int x, int y, int z, Pentomino pentomino) {
         int xPosition;
         int yPosition;
+        int zPosition = 0;
         boolean currentFits = true;
 
-        int rows = pentomino.getLetterMat().length;
-        int cols = pentomino.getLetterMat()[0].length;
+        int planes = pentomino.getPositioningInSpace().length;
+        int rows = pentomino.getPositioningInSpace()[0].length;
+        int cols = pentomino.getPositioningInSpace()[0][0].length;
 
-        int startCol = pentomino.colIndexOfStartPoint();
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < cols; j++) {
-                if (pentomino.getLetterMat()[i][j] == 1) {
-                    xPosition = x + i;
-                    yPosition = y + j - startCol;
+        int startX = pentomino.xIndexOfStartPoint();
+        int startY = pentomino.yIndexOfStartPoint();
+        int startZ = pentomino.zIndexOfStartPoint();
 
-                    if (xPosition < 0 || yPosition < 0 || xPosition >= height || yPosition >= width || board[xPosition][yPosition] != ' ') {
-                        currentFits = false;
-                        break;
+        for (int k = 0; k < planes; k++) {
+            for (int i = 0; i < rows; i++) {
+                for (int j = 0; j < cols; j++) {
+                    if (pentomino.getPositioningInSpace()[k][i][j] == 1) {
+                        xPosition = x + i - startX;
+                        yPosition = y + j - startY;
+                        zPosition = z + k - startZ;///check if working
+                        if (zPosition < 0 || xPosition < 0 || yPosition < 0 || xPosition >= height || yPosition >= width || zPosition >= length ||
+                                cargoSpace[xPosition][yPosition][zPosition] != ' ') {
+                            currentFits = false;
+                            break;
+                        }
                     }
                 }
             }
         }
+
         return currentFits;
     }
 
     /**
-     * The method gets the shape of the current pentomino, removes it from the board and assign the current cell as empty(not filled)
+     * The method gets the shape of the current pentomino, removes it from the cargoSpace and assign the current cell as empty(not filled)
      * The method also makes the position of the pentomino in boolean array false, so that it can be used again
      * @param x coordinate of x axis
      * @param y coordinate of y axis
      * @param pentomino the current pentomino
      */
-    private static void removePentomino(int x, int y, Pentomino pentomino) {
+    private static void removePentomino(int x, int y, int z, Pentomino pentomino) {
         int xPosition;
         int yPosition;
-        int rows = pentomino.getLetterMat().length;
-        int cols = pentomino.getLetterMat()[0].length;
-        int startCol = pentomino.colIndexOfStartPoint();
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < cols; j++) {
-                if(pentomino.getLetterMat()[i][j] == 1) {
-                    xPosition = x + i;
-                    yPosition = y + j - startCol;
+        int zPosition;
 
-                    board[xPosition][yPosition] = ' ';
+        int planes = pentomino.getPositioningInSpace().length;
+        int rows = pentomino.getPositioningInSpace()[0].length;
+        int cols = pentomino.getPositioningInSpace()[0][0].length;
+
+        int startX = pentomino.xIndexOfStartPoint();
+        int startY = pentomino.yIndexOfStartPoint();
+        int startZ = pentomino.zIndexOfStartPoint();
+
+        for (int i = 0; i < planes; i++) {
+            for (int j = 0; j < rows; j++) {
+                for (int k = 0; k < cols; k++) {
+                    if(pentomino.getPositioningInSpace()[i][j][k] == 1) {
+                        xPosition = x + i - startX;
+                        yPosition = y + j - startY;
+                        zPosition = z + k - startZ;///check if working
+                        cargoSpace[xPosition][yPosition][zPosition] = ' ';
+                    }
                 }
+
             }
         }
-
-        usedPentominoes[pentomino.getBooleanArrayPos()] = false;
     }
 
     /**
@@ -268,10 +301,10 @@ public class Main {
      * @param x coordinate of x axis
      * @param y coordinate of y axis
      */
-    private static void countEmptyCells(int x, int y) {
+    /*private static void countEmptyCells(int x, int y) {
 
-        if (y >= 0 && x < height && x >= 0 && y < width && board[x][y] == ' '){
-            board[x][y] = 'a';
+        if (y >= 0 && x < height && x >= 0 && y < width && cargoSpace[x][y] == ' '){
+            cargoSpace[x][y] = 'a';
             emptyCells++;
 
         }
@@ -283,24 +316,24 @@ public class Main {
         countEmptyCells(x+1,y);
         countEmptyCells(x,y+1);
         countEmptyCells(x-1,y);
-    }
+    }*/
 
     /**
      * The method checks the most left cells and searches for an empty one. When found, it counts how many isolated cells are there
      *
      */
-    private static boolean impossibleCase() {
+    /*private static boolean impossibleCase() {
 
         for (int l = 0; l < width; l++) { //checking for free cell
             for (int j = 0; j < height; j++) {
-                if (board[j][l] == ' '){
+                if (cargoSpace[j][l] == ' '){
                     emptyCells =0;
                     countEmptyCells(j, l);
 
                     for (int k = 0; k < height; k++) { //backtracking
                         for (int m = 0; m < width; m++) {
-                            if (board[k][m] == 'a')
-                                board[k][m] = ' ';
+                            if (cargoSpace[k][m] == 'a')
+                                cargoSpace[k][m] = ' ';
                         }
                     }
 
@@ -313,7 +346,7 @@ public class Main {
         }
         return false;
     }
-
+*/
     /**
      * Tests whether valid dimension inputs were inputted
      * @param dimension
@@ -324,23 +357,7 @@ public class Main {
         try {
             width =  Integer.parseInt(dimension[0]);
             height =  Integer.parseInt(dimension[1]);
-        } catch (NumberFormatException e) {
-            return false;
-        } catch (ArrayIndexOutOfBoundsException e) {
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * The method gets the shape of the current pentomino, puts it on the board and assign the current cell as filled
-     * The method also makes the position of the pentomino in boolean array true, so that it cannot be used again
-     * @param height board's height
-     * @param width board's width
-     * @param input array of pentomino characters
-     */
-    private static boolean boardValidation(int height, int width, char[] input) {
-        if (height * width > input.length * 5) {
+        } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
             return false;
         }
         return true;
@@ -370,7 +387,7 @@ public class Main {
      * @param matrix the original matrix
      * @return char matrix of original matrix that has been rotated
      */
-    private static char[][] rotateBoard(char[][] matrix){//New
+    private static char[][] rotateBoard(char[][] matrix){//probably it is not useful anymore
         int matLen = matrix.length;
         int matWid = matrix[0].length;
         char[][] newMatrix = new char[matWid][matLen];
