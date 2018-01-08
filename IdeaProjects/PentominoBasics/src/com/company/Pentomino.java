@@ -1,5 +1,7 @@
 package com.company;
 
+import javafx.geometry.Point3D;
+
 /**
  A single pentomino object
  */
@@ -8,6 +10,8 @@ public class Pentomino {
 
     private int[][][] positioningInSpace;
     private char type;
+    private Point3D startingPoint;
+
 
     /**
      Constructor
@@ -17,6 +21,7 @@ public class Pentomino {
     public Pentomino(int[][][] positioningInSpace, char c){
         this.positioningInSpace = positioningInSpace;
         this.type = c;
+        setStartingPoint();
     }
 
     /**
@@ -26,6 +31,20 @@ public class Pentomino {
     public int[][][] getPositioningInSpace(){
         return this.positioningInSpace;
     }
+
+    private void setStartingPoint() {
+        for (int i = 0; i < positioningInSpace.length; i++) {
+            for (int j = 0; j < positioningInSpace[0].length; j++) {
+                for (int k = 0; k < positioningInSpace[0][0].length; k++) {
+                    if(this.positioningInSpace[i][j][k] == 1) {
+                        startingPoint = new Point3D(i,j,k);
+                        return;
+                    }
+                }
+            }
+        }
+    }
+
 
     /**
      * Return type passed to the constructor.
@@ -38,44 +57,23 @@ public class Pentomino {
      Method that determines which index in the array is considered the starting point for placing the pentomino on the board.
      @return the column index of the first cell in the first row of the matrix that is 1 i.e. not empty
      */
-    public int xIndexOfStartPoint(){
-        int index=0;
-        for (int i = 0; i < this.positioningInSpace.length; i++) {
-            if(this.positioningInSpace[i][0][0] == 1) {
-                index = i;
-                break;
-            }
-        }
-        return index;
+    public int zIndexOfStartPoint(){
+        return (int)startingPoint.getZ();
     }
 
     /**
      Method that determines which index in the array is considered the starting point for placing the pentomino on the board.
      @return the column index of the first cell in the first row of the matrix that is 1 i.e. not empty
      */
-    public int yIndexOfStartPoint(){
-        int index=0;
-        for (int i = 0; i < this.positioningInSpace[0].length; i++) {
-            if(this.positioningInSpace[0][i][0] == 1) {
-                index = i;
-                break;
-            }
-        }
-        return index;
+    public int xIndexOfStartPoint(){
+        return (int)startingPoint.getX();
     }
     /**
      Method that determines which index in the array is considered the starting point for placing the pentomino on the board.
      @return the column index of the first cell in the first row of the matrix that is 1 i.e. not empty
      */
-    public int zIndexOfStartPoint(){
-        int index=0;
-        for (int i = 0; i < this.positioningInSpace[0][0].length; i++) {
-            if(this.positioningInSpace[0][0][i] == 1) {
-                index = i;
-                break;
-            }
-        }
-        return index;
+    public int yIndexOfStartPoint(){
+        return (int)startingPoint.getY();
     }
 
 }
