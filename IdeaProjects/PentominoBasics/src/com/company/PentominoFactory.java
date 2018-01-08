@@ -8,6 +8,9 @@ import java.util.Arrays;
 
 public class PentominoFactory {
 
+
+    public static final int ALL_POSSIBLE_ROTATIONS = 24;
+    public static final int ALL_POSSIBLE_FIGURES = 120;
     /**
      *	Constructor
      *	Creates an array of pentomino objects each with a unique matrix
@@ -19,8 +22,8 @@ public class PentominoFactory {
         int[][][] baseRotation; //Original form of letter
         int count = 0; // Counter for all unique orientations of the input pentominoes
 
-        Pentomino[] AllVar = new Pentomino[163];
-        Pentomino[] currentPentomino = new Pentomino[8];// array for all rotations and flips of the pentomino
+        Pentomino[] AllVar = new Pentomino[ALL_POSSIBLE_FIGURES];
+        Pentomino[] currentPentomino = new Pentomino[ALL_POSSIBLE_ROTATIONS];// array for all rotations and flips of the pentomino
 
         for (int i = 0; i < inputLetters.length; i++){//for every char
             baseRotation = createPemtomino(inputLetters[i]);
@@ -44,6 +47,47 @@ public class PentominoFactory {
                         currentCounter++;
                     }
                     baseRotation = rotateXy(baseRotation);
+                }
+            }
+
+            baseRotation = rotate3D(baseRotation);
+
+            for (int j = 0; j < 4; j++){
+                currentPentomino[currentCounter] = new Pentomino(baseRotation,inputLetters[i]);
+                currentCounter++;
+                baseRotation = rotateZy(baseRotation);
+            }
+
+            if(isDifferent(flipZyPlane(baseRotation),baseRotation)){
+
+                baseRotation = flipZyPlane(baseRotation);
+
+                for (int j = 0; j < 4; j++){
+                    currentPentomino[currentCounter] = new Pentomino(baseRotation,inputLetters[i]);
+                    currentCounter++;
+
+                    baseRotation = rotateZy(baseRotation);
+                }
+            }
+
+            baseRotation = rotate3D(baseRotation);
+
+            for (int j = 0; j < 4; j++){
+                currentPentomino[currentCounter] = new Pentomino(baseRotation,inputLetters[i]);
+                currentCounter++;
+
+                baseRotation = rotateXz(baseRotation);
+            }
+
+            if(isDifferent(flipXzPlane(baseRotation),baseRotation)){
+
+                baseRotation = flipXzPlane(baseRotation);
+
+                for (int j = 0; j < 4; j++){
+                    currentPentomino[currentCounter] = new Pentomino(baseRotation,inputLetters[i]);
+                    currentCounter++;
+
+                    baseRotation = rotateXz(baseRotation);
                 }
             }
 
@@ -164,13 +208,29 @@ public class PentominoFactory {
     private static int[][][] rotateXz(int[][][] shape){
         int height = shape[0].length;
         int planes = shape.length;
-        int[][][] newShape = new int[height][planes][0];
+        int[][][] newShape = new int[height][planes][1];
         for (int i = 0; i < planes; i++){
             for (int j = 0; j < height; j++){
                 newShape[j][planes-1-i][0] = shape[i][j][0];
             }
         }
         return newShape;
+    }
+
+    public static int[][][] rotate3D(int[][][] preRotatedMatrix) {
+        int depth = preRotatedMatrix.length;
+        int height = preRotatedMatrix[0].length;
+        int width = preRotatedMatrix[0][0].length;
+        int[][][] newMatrix = new int[width][depth][height];
+        for (int i = 0; i < depth; i++) {
+            for (int j = 0; j < height; j++) {
+                for (int k = 0; k < width; k++) {
+                    newMatrix[k][i][j] = preRotatedMatrix[i][j][k];
+                }
+            }
+        }
+
+        return newMatrix;
     }
 
     /**
