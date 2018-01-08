@@ -1,5 +1,6 @@
 package com.company;
 
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.Scanner;
 
@@ -11,7 +12,7 @@ public class Main {
     private static int emptyCells;
     private static int width;
     private static int height;
-    private static int length;
+    private static int depth;
     private static boolean solutionFound;
     private static boolean countingNeeded =false;
 
@@ -20,7 +21,7 @@ public class Main {
 
         //Start input
         Scanner sc = new Scanner(System.in);
-        System.out.println("Width, height and length of the cargoSpace: ");
+        System.out.println("Width, height and depth of the cargoSpace: ");
         String boardSize = sc.nextLine();
         String[] dimension = boardSize.split(" ");
 
@@ -31,6 +32,7 @@ public class Main {
         }
         width =  Integer.parseInt(dimension[0]);
         height =  Integer.parseInt(dimension[1]);
+        depth = Integer.parseInt(dimension[2]);
 
         boolean rotateBoard =false;
         if(width > height ) { // if the width is bigger the program is slower, that is why we can swap the height and width
@@ -62,33 +64,21 @@ public class Main {
 
         //End input
 
-        cargoSpace = new char[height][width][length];
-        for (int l = 0; l < height; l++) {
-            for (int j = 0; j < width; j++) {
-                for (int i = 0; i < length; i++) {
+        cargoSpace = new char[depth][height][width];
+        for (int l = 0; l < depth; l++) {
+            for (int j = 0; j < height; j++) {
+                for (int i = 0; i < width; i++) {
                     cargoSpace[l][j][i] = ' ';
                 }
             }
         }
-
         pentominoes = PentominoFactory.createLetters(inputArray);
-        int [][][] shape;
-        for(Pentomino pent: pentominoes)
-        {
-            System.out.println("new shape");
-            shape = pent.getPositioningInSpace();
-            for (int i = 0; i < shape.length; i++) {
-                System.out.println("new plane");
-                for (int j = 0; j < shape[0].length; j++) {
-                    for (int k = 0; k < shape[0][0].length; k++) {
-                        System.out.print(shape[i][j][k] + " ");
-                    }
-                    System.out.println();
-                }
-            }
-        }
+        for(Pentomino currentPentomino: pentominoes)
+            System.out.println(Arrays.deepToString(currentPentomino.getPositioningInSpace()));
+        System.out.println(pentominoes.length);
 
         long startTime = System.nanoTime();
+
 
         //searchSolution(0 ,0, 0);
 
@@ -106,8 +96,8 @@ public class Main {
             /*if(rotateBoard)
             {
                 cargoSpace = rotateBoard(cargoSpace);
-                height = cargoSpace.length;
-                width = cargoSpace[0].length;
+                height = cargoSpace.depth;
+                width = cargoSpace[0].depth;
             }*/
 
             //Display.disp(cargoSpace);
@@ -132,6 +122,8 @@ public class Main {
             boolean currentFits = isCurrentFits(x, y, z, currentPentomino);
 
             if (currentFits) {
+
+                System.out.println(Arrays.deepToString(currentPentomino.getPositioningInSpace()));
                 putPentominoOnTheBoard(x, y, z, currentPentomino);
 
                 /*if (impossibleCase()) {
@@ -142,14 +134,14 @@ public class Main {
                 boolean freeCellFound = false;
 
 
-                for (int l = 0; l < height; l++) { //checking for free cell
-                    for (int j = 0; j < width; j++) {
-                        for (int i = 0; i < length; i++) {
+                for (int k = 0; k < depth; k++) { //checking for free cell
+                    for (int j = 0; j < height; j++) {
+                        for (int i = 0; i < width; i++) {
 
-                            if (cargoSpace[l][j][i] == ' ') {
+                            if (cargoSpace[k][j][i] == ' ') {
 
                                 freeCellFound = true;
-                                searchSolution(l, j, i);/// go into the recursion
+                                searchSolution(k, j, i);/// go into the recursion
 
                                 if (solutionFound && !countingNeeded) //if the condition is true the program will go out of all recursions
                                 {
@@ -160,15 +152,18 @@ public class Main {
                         }
                         if (freeCellFound) break;
                     }
+                    if(freeCellFound) break;
                 }
 
                 if (!freeCellFound) {
                     if (countingNeeded) {
-                        for (int l = 0; l < height; l++) {
-                            for (int j = 0; j < width; j++) {
-                                System.out.print(cargoSpace[l][j] + " ");
+                        for (int i = 0; i < depth; i++) {
+                            for (int l = 0; l < height; l++) {
+                                for (int j = 0; j < width; j++) {
+                                    System.out.print(cargoSpace[i][l][j] + " ");
+                                }
+                                System.out.println();
                             }
-                            System.out.println();
                         }
                         System.out.println();
                         solutionsCount++;
@@ -206,14 +201,14 @@ public class Main {
         int startY = pentomino.yIndexOfStartPoint();
         int startZ = pentomino.zIndexOfStartPoint();
 
-        for (int i = 0; i < planes; i++) {
-            for (int j = 0; j < rows; j++) {
-                for (int k = 0; k < cols; k++) {
-                    if (pentomino.getPositioningInSpace()[i][j][k] == 1) {
-                        xPosition = x + i - startX;
-                        yPosition = y + j - startY;
-                        zPosition = z + k - startZ;///check if working
-                        cargoSpace[zPosition][xPosition][yPosition] = pentomino.getType();
+        for (int k = 0; k < planes; k++) {
+            for (int i = 0; i < rows; i++) {
+                for (int j = 0; j < cols; j++) {
+                    if (pentomino.getPositioningInSpace()[k][i][j] == 1) {
+                        xPosition = x + k - startX;
+                        yPosition = y + i - startY;
+                        zPosition = z + j - startZ;///check if working
+                        cargoSpace[xPosition][yPosition][zPosition] = pentomino.getType();
                     }
                 }
 
@@ -230,7 +225,7 @@ public class Main {
     private static boolean isCurrentFits(int x, int y, int z, Pentomino pentomino) {
         int xPosition;
         int yPosition;
-        int zPosition = 0;
+        int zPosition;
         boolean currentFits = true;
 
         int planes = pentomino.getPositioningInSpace().length;
@@ -245,11 +240,14 @@ public class Main {
             for (int i = 0; i < rows; i++) {
                 for (int j = 0; j < cols; j++) {
                     if (pentomino.getPositioningInSpace()[k][i][j] == 1) {
-                        xPosition = x + i - startX;
-                        yPosition = y + j - startY;
-                        zPosition = z + k - startZ;///check if working
-                        if (zPosition < 0 || xPosition < 0 || yPosition < 0 || xPosition >= height || yPosition >= width || zPosition >= length ||
-                                cargoSpace[xPosition][yPosition][zPosition] != ' ') {
+                        xPosition = x + k - startX;
+                        yPosition = y + i - startY;
+                        zPosition = z + j - startZ;
+                        ///check if working
+                        if (zPosition < 0 || xPosition < 0 || yPosition < 0 ||
+                            xPosition >= depth || yPosition >= height || zPosition >= width ||
+                            cargoSpace[xPosition][yPosition][zPosition] != ' ')
+                        {
                             currentFits = false;
                             break;
                         }
@@ -281,13 +279,13 @@ public class Main {
         int startY = pentomino.yIndexOfStartPoint();
         int startZ = pentomino.zIndexOfStartPoint();
 
-        for (int i = 0; i < planes; i++) {
-            for (int j = 0; j < rows; j++) {
-                for (int k = 0; k < cols; k++) {
-                    if(pentomino.getPositioningInSpace()[i][j][k] == 1) {
-                        xPosition = x + i - startX;
-                        yPosition = y + j - startY;
-                        zPosition = z + k - startZ;///check if working
+        for (int k = 0; k < planes; k++) {
+            for (int i = 0; i < rows; i++) {
+                for (int j = 0; j < cols; j++) {
+                    if(pentomino.getPositioningInSpace()[k][i][j] == 1) {
+                        xPosition = x + k - startX;
+                        yPosition = y + i - startY;
+                        zPosition = z + j - startZ;;///check if working
                         cargoSpace[xPosition][yPosition][zPosition] = ' ';
                     }
                 }
