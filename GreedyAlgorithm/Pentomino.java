@@ -1,5 +1,3 @@
-package com.company;
-
 import javafx.geometry.Point3D;
 
 /**
