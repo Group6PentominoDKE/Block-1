@@ -1,5 +1,5 @@
-package com.company;
 
+import java.lang.reflect.Array;
 import java.util.Arrays;
 
 /**
@@ -24,6 +24,47 @@ public class PentominoFactory {
 
         Pentomino[] AllVar = new Pentomino[ALL_POSSIBLE_FIGURES];
         Pentomino[] currentPentomino = new Pentomino[ALL_POSSIBLE_ROTATIONS];// array for all rotations and flips of the pentomino
+
+        if(inputLetters.toString().contains("a") || inputLetters.toString().contains("b") || inputLetters.toString().contains("c")) {
+            for (int i = 0; i < inputLetters.length; i++) {
+
+                int currentCounter = 0;
+                baseRotation = createPemtomino(inputLetters[i]);
+
+                currentPentomino[currentCounter] = new Pentomino(baseRotation, inputLetters[i]);
+                currentCounter++;
+                if (baseRotation.length == baseRotation[0].length && baseRotation[0].length == baseRotation[0][0].length) {
+                    //do nothing because there just 1 rotation
+                } else if (baseRotation.length == baseRotation[0].length ||
+                        baseRotation[0].length == baseRotation[0][0].length ||
+                        baseRotation.length == baseRotation[0][0].length) {
+                    for (int j = 1; j < 3; j++) {
+                        baseRotation = rotate3D(baseRotation);
+                        currentPentomino[j] = new Pentomino(baseRotation, inputLetters[i]);
+                    }
+                    currentCounter = 3;
+                } else {
+                    for (int j = 1; j < 3; j++) {
+                        baseRotation = rotate3D(baseRotation);
+                        currentPentomino[j] = new Pentomino(baseRotation, inputLetters[i]);
+                        currentCounter++;
+                    }
+                    baseRotation = rotate2D(baseRotation);
+                    for (int j = 3; j < 6; j++) {
+                        currentPentomino[j] = new Pentomino(baseRotation, inputLetters[i]);
+                        currentCounter++;
+                        baseRotation = rotate3D(baseRotation);
+                    }
+                    currentCounter = 6;
+                }
+                for (int k = 0; k < currentCounter; k++) {
+                    AllVar[count] = currentPentomino[k];
+                    currentPentomino[k] = null;
+                    count++;
+                }
+            }
+            return Arrays.copyOf(AllVar, count);
+        }
 
         for (int i = 0; i < inputLetters.length; i++){//for every char
             baseRotation = createPemtomino(inputLetters[i]);
@@ -112,18 +153,37 @@ public class PentominoFactory {
             result =  new int[][][]{{{1,1},{1,1},{1,0}}};//P
         else if (letter == 't')
             result =  new int[][][]{{{1,1,1},{0,1,0},{0,1,0}}};//T
-        /*else if (letter == 'a')
-            result =  new int[][][]{{1,1,0},{0,1,0},{0,1,1}};//Z
-        else if (letter == 'b')
-            result =  new int[][][]{{1,0,1},{1,1,1}};//U
         else if (letter == 'c')
-            result =  new int[][][]{{1,1,0,0},{0,1,1,1}};//N
-        */
+        {
+            result =  new int[3][3][3];
+            fill(result);//Z
+        }
+        else if (letter == 'a')
+        {
+            result =  new int[2][2][4];
+            fill(result);
+        }
+        //U
+        else if (letter == 'b')
+        {
+            result =  new int[2][3][4];
+            fill(result);
+        }
         else if(letter == 'l')
             result =  new int[][][]{{{0,0,0,1},{1,1,1,1}}};//L
         else result = null;
 
         return result;
+    }
+
+    private static void fill(int[][][] result) {
+        for (int l = 0; l < result.length; l++) {
+            for (int j = 0; j < result[0].length; j++) {
+                for (int i = 0; i < result[0][0].length; i++) {
+                    result[l][j][i] = 1;
+                }
+            }
+        }
     }
 
     /**
@@ -217,7 +277,7 @@ public class PentominoFactory {
         return newShape;
     }
 
-    public static int[][][] rotate3D(int[][][] preRotatedMatrix) {
+    private static int[][][] rotate3D(int[][][] preRotatedMatrix) {
         int depth = preRotatedMatrix.length;
         int height = preRotatedMatrix[0].length;
         int width = preRotatedMatrix[0][0].length;
@@ -226,6 +286,22 @@ public class PentominoFactory {
             for (int j = 0; j < height; j++) {
                 for (int k = 0; k < width; k++) {
                     newMatrix[k][i][j] = preRotatedMatrix[i][j][k];
+                }
+            }
+        }
+
+        return newMatrix;
+    }
+
+    private static int[][][] rotate2D(int[][][] preRotatedMatrix) {
+        int depth = preRotatedMatrix.length;
+        int height = preRotatedMatrix[0].length;
+        int width = preRotatedMatrix[0][0].length;
+        int[][][] newMatrix = new int[width][height][depth];
+        for (int i = 0; i < depth; i++) {
+            for (int j = 0; j < height; j++) {
+                for (int k = 0; k < width; k++) {
+                    newMatrix[k][j][i] = preRotatedMatrix[i][j][k];
                 }
             }
         }
