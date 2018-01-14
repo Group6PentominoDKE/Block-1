@@ -25,7 +25,7 @@ public class PentominoFactory {
         Pentomino[] AllVar = new Pentomino[ALL_POSSIBLE_FIGURES];
         Pentomino[] currentPentomino = new Pentomino[ALL_POSSIBLE_ROTATIONS];// array for all rotations and flips of the pentomino
 
-        if(inputLetters.toString().contains("a") || inputLetters.toString().contains("b") || inputLetters.toString().contains("c")) {
+        if(Arrays.toString(inputLetters).contains("a") || Arrays.toString(inputLetters).contains("b") || Arrays.toString(inputLetters).contains("c")) {
             for (int i = 0; i < inputLetters.length; i++) {
 
                 int currentCounter = 0;
