@@ -9,14 +9,14 @@ public class test2 {
 		Application.launch(test.class, args);
 		test attempt = new test();
 		String thisLine = null;
-		int a = 1;
+		double a = 1;
 		try
         {
             FileReader fR = new FileReader("values.txt");
 			BufferedReader br = new BufferedReader(fR);
 		    while ((thisLine = br.readLine()) != null) {
             // System.out.println(thisLine);
-				a = Integer.parseInt(thisLine);
+				a = Double.parseDouble(thisLine);
 		    }       
 		} catch(Exception e) {
 			e.printStackTrace();
