@@ -1,5 +1,3 @@
-package com.company;
-
 import javafx.geometry.Point3D;
 
 /**
@@ -11,7 +9,16 @@ public class Pentomino {
     private int[][][] positioningInSpace;
     private char type;
     private Point3D startingPoint;
+    private double value;
 
+    public void setValue(double value) {
+        this.value = value;
+    }
+
+    public double getValue() {
+
+        return value;
+    }
 
     /**
      Constructor
@@ -23,6 +30,8 @@ public class Pentomino {
         this.type = c;
         setStartingPoint();
     }
+
+
 
     /**
      * Return LetterMatrix passed to the constructor.
