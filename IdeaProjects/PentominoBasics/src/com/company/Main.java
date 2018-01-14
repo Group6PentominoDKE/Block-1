@@ -1,10 +1,8 @@
-import java.util.Arrays;
-import java.util.Objects;
 import java.util.Scanner;
 
 public class Main {
 
-    private static Pentomino[] pentominoes;
+    private static Pentomino[] parcelRotations;
     private static char[][][] cargoSpace;//globally defining the cargoSpace
 
     private static int emptyCells;
@@ -13,6 +11,7 @@ public class Main {
     private static int depth;
     private static boolean solutionFound;
     private static boolean countingNeeded =false;
+    private static int score;
 
     private static int ID = 0;
     private static int[][][] everyShape;
@@ -41,7 +40,9 @@ public class Main {
 
         char[] inputArray = input.toLowerCase().toCharArray();
 
-        pentominoes = PentominoFactory.createLetters(inputArray);
+        parcelRotations = PentominoFactory.createLetters(inputArray);
+
+        assignValues();
 
         cargoSpace = new char[depth][height][width];
         for (int l = 0; l < depth; l++) {
@@ -53,12 +54,11 @@ public class Main {
         }
 
         everyShape = new int[depth][height][width];
-/*
 
-        for(Pentomino currentPentomino: pentominoes)
+       /* for(Pentomino currentPentomino: parcelRotations)
             System.out.println(Arrays.deepToString(currentPentomino.getPositioningInSpace()));
-        System.out.println(pentominoes.length);
-*/
+        System.out.println(parcelRotations.length);*/
+
 
         long startTime = System.nanoTime();
 
@@ -70,7 +70,16 @@ public class Main {
 
         if(solutionFound)
         {
-
+            for (int i = 0; i < depth; i++) {
+                for (int l = 0; l < height; l++) {
+                    for (int j = 0; j < width; j++) {
+                        System.out.print(cargoSpace[i][l][j] + " ");
+                    }
+                    System.out.println();
+                }
+                System.out.println();
+            }
+            System.out.println(score);
         }
         else {
             System.out.println("No possible solution");
@@ -78,16 +87,33 @@ public class Main {
 
 
     }
+    private static void assignValues() {
+        for (int i = 0; i < parcelRotations.length; i++) {
+            if(parcelRotations[i].getType() == 'a' || parcelRotations[i].getType() == 'l')
+            {
+                parcelRotations[i].setValue(3);
+            }
+            else if(parcelRotations[i].getType() == 'b' || parcelRotations[i].getType() == 'p')
+            {
+                parcelRotations[i].setValue(4);
+            }
+            else if(parcelRotations[i].getType() == 'c' || parcelRotations[i].getType() == 't')
+            {
+                parcelRotations[i].setValue(5);
+            }
+        }
+    }
+
 
     /**
-     * Essential method of the program containing most of the logic. It is recursive and it iterates through all of the pentominoes
-     * If it finds fitting pentomino it goes into recursion and when there are no more possible pentominoes it goes out of the recursion and backtracks
+     * Essential method of the program containing most of the logic. It is recursive and it iterates through all of the parcelRotations
+     * If it finds fitting pentomino it goes into recursion and when there are no more possible parcelRotations it goes out of the recursion and backtracks
      * @param x coordinate of x axis
      * @param y coordinate of y axis
      */
     private static void searchSolution(int x, int y, int z) {
 
-        for (Pentomino currentPentomino : pentominoes) {
+        for (Pentomino currentPentomino : parcelRotations) {
 
             boolean currentFits = isCurrentFits(x, y, z, currentPentomino);
 
@@ -100,11 +126,12 @@ public class Main {
                     removePentomino(x, y, z , currentPentomino);
                     continue;
                 }*/
+                score+= currentPentomino.getValue();
 
                 boolean freeCellFound = false;
 
 
-                for (int k = x; k < depth; k++) { //checking for free cell
+                for (int k = 0; k < depth; k++) { //checking for free cell
                     for (int j = 0; j < height; j++) {
                         for (int i = 0; i < width; i++) {
                             if (cargoSpace[k][j][i] == ' ') {
@@ -125,24 +152,24 @@ public class Main {
                 }
 
                 if (!freeCellFound) {
-                    for (int i = 0; i < depth; i++) {
+                    /*for (int i = 0; i < depth; i++) {
                         for (int l = 0; l < height; l++) {
                             for (int j = 0; j < width; j++) {
-                                System.out.print(everyShape[i][l][j] + " ");
+                                //System.out.print(everyShape[i][l][j] + " ");
                             }
                             System.out.println();
                         }
                         System.out.println();
                     }
                     System.out.println();
-
+*/
                     solutionFound = true;
                     return;
 
                 }
 
                 removePentomino(x, y,z, currentPentomino); //backtracking
-
+                score -= currentPentomino.getValue();
             }
 
         }
