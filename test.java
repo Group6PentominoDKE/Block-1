@@ -44,8 +44,9 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Label;
 import javafx.geometry.Insets;
-
-// package phase3;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 
 public class test extends Application implements EventHandler<ActionEvent> {
 	// Declare variables, buttons and stuff
@@ -82,7 +83,9 @@ public class test extends Application implements EventHandler<ActionEvent> {
 	int P1;
 	int T1;
 	
-	public void start(Stage primaryStage) throws Exception {
+	
+	
+	public void start(Stage primaryStage)  {
 		window = primaryStage;
 		window.setTitle("Container Fitting");
 		
@@ -419,10 +422,11 @@ public class test extends Application implements EventHandler<ActionEvent> {
 		primaryStage.show();
 	*/
 	
-	 // Main. 
+	 /* Main. 
 	public static void main(String[] args) throws Exception  {
 		launch(args);
 	}
+	*/
 	
 	// Handle the button clicks.
 	public void handle(ActionEvent event) {
@@ -445,7 +449,22 @@ public class test extends Application implements EventHandler<ActionEvent> {
 	    if (event.getSource() == abcok) {
 	    	combChoice = (String) combbox.getValue();
 	    	System.out.println(combChoice);
+			
+			VA1 = Integer.parseInt(VAfield.getText());
+			FileWriter fw;
+			try {
+				fw = new FileWriter(new File("values.txt"));
+                fw.write(String.format(Integer.toString(VA1)));
+				fw.close();
+
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                 }
+				try {  stop();}
+				catch (Exception ex) {}
+			
 	    	window.setScene(scene);
+
 	    }
 	}
 
