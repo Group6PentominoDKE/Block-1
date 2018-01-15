@@ -1,4 +1,3 @@
-package com.company;
 import javafx.scene.shape.Box;
 import javafx.scene.Group;
 import javafx.scene.paint.*;
