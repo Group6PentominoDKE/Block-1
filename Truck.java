@@ -16,6 +16,7 @@ public class Truck extends Application {
     private static final int WINDOW_HEIGHT = 700;
     private static final int CameraViewDistance = 700;
     private static final int RotateAngle = 5;
+    private static final int RES = 50;
     private static int[][][] array;
     private static boolean pentMode;
 
@@ -24,13 +25,19 @@ public class Truck extends Application {
       pentMode = pent;
     }
     public void start(Stage stage) {
+
         Group root = new Group();
+        Scene scene = new Scene(root, WINDOW_LENGTH, WINDOW_HEIGHT, true);
+        root.setTranslateX(WINDOW_LENGTH/2 - array.length*RES/2+25);
+        root.setTranslateY(WINDOW_HEIGHT/2 - array[0].length*RES/2+25);
+        root.setTranslateZ(-array[0][0].length*RES/2+25);
         CargoStacker cargo = new CargoStacker(root, array, pentMode);
         cargo.stack();
-        Scene scene = new Scene(root, WINDOW_LENGTH, WINDOW_HEIGHT, true);
+
         PerspectiveCamera camera = new PerspectiveCamera(false);
         camera.setTranslateZ(-CameraViewDistance);
         scene.setCamera(camera);
+
         EventHandler<KeyEvent> handler = new EventHandler<KeyEvent>() {
            public void handle(KeyEvent e) {
 
