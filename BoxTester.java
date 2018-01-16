@@ -5,9 +5,9 @@ import javafx.scene.paint.*;
 
 public class BoxTester {
 
+  private static int RES = 50;
   private int[][][] array;
   private int[] coordList = new int[15];
-  private int squareCounter;
   private Box box;
 
   public BoxTester (int[][][] inArray) {
@@ -40,10 +40,11 @@ public class BoxTester {
   }
   public void build(int x, int y, int z, int i, int j, int k) {
     PhongMaterial material = new PhongMaterial(new Color(Math.random(), Math.random(), Math.random(),1.0));
-    box.setTranslateX(i*50);
-    box.setTranslateY(j*50);
-    box.setTranslateZ(k*50);
-    box = new Box(x*50, y*50, z*50);
+    box = new Box(x*RES, y*RES, z*RES);
+    box.setMaterial(material);
+    box.setTranslateX(i*RES);
+    box.setTranslateY(j*RES);
+    box.setTranslateZ(k*RES);
   }
   public Box getBox() {
     return box;
