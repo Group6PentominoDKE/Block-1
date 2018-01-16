@@ -23,26 +23,24 @@ private PentominoTester testerPent;
 private BoxTester testerBox;
 private boolean pentMode;
 
-public CargoStacker (Group space, int[][][] input, boolean pent) {
+public CargoStacker (Group space, int[][][] input, boolean pento) {
   array = input;
   cargoSpace = space;
   testerPent = new PentominoTester(input);
   testerBox = new BoxTester(input);
-  pentMode = pent;
+  pentMode = pento;
 }
 
 public Group stack () {
   pent = new Group();
   for(int i=0; i<array.length; i++) {
-    //System.out.println(i);
     for(int j=0; j<array[0].length; j++) {
       for(int k=0; k<array[0][0].length; k++) {
         if(array[i][j][k] != 0) {
           if(pentMode == true) {
           array = testerPent.search(i,j,k,array[i][j][k]);
-          pent = testerPent.getPent();
-          pent.setVisible(true);  cargoSpace.getChildren().add(pent);
-          } else {
+          cargoSpace.getChildren().add(testerPent.getPent());
+        } else {
           array = testerBox.search(i,j,k,array[i][j][k]);
           cargoSpace.getChildren().add(testerBox.getBox());
           }
