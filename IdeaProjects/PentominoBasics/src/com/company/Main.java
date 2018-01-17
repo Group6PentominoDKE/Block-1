@@ -16,6 +16,8 @@ public class Main {
     private static int ID = 0;
     private static int[][][] everyShape;
 
+    private static boolean usingPents = false;
+
     public static void main(String[] args) {
 
         //Start input
@@ -80,6 +82,9 @@ public class Main {
                 System.out.println();
             }
             System.out.println(score);
+
+            Truck.insertArray(everyShape, usingPents);
+            Truck.launch(Truck.class, args);
         }
         else {
             System.out.println("No possible solution");
@@ -119,13 +124,14 @@ public class Main {
 
             if (currentFits) {
 
+                ID++;
                 //System.out.println(Arrays.deepToString(currentPentomino.getPositioningInSpace()));
                 putPentominoOnTheBoard(x, y, z, currentPentomino);
-                ID++;
-                /*if (impossibleCase()) {
+
+                if (usingPents && impossibleCase()) {
                     removePentomino(x, y, z , currentPentomino);
                     continue;
-                }*/
+                }
                 score+= currentPentomino.getValue();
 
                 boolean freeCellFound = false;
@@ -201,7 +207,7 @@ public class Main {
                     if (pentomino.getPositioningInSpace()[k][i][j] == 1) {
                         xPosition = x + k - startX;
                         yPosition = y + i - startY;
-                        zPosition = z + j - startZ;///check if working
+                        zPosition = z + j - startZ;
                         cargoSpace[xPosition][yPosition][zPosition] = pentomino.getType();
                         everyShape[xPosition][yPosition][zPosition] = ID;
                     }
