@@ -17,8 +17,8 @@ public class Truck extends Application {
 
   private static final int WINDOW_LENGTH = 1500;
   private static final int WINDOW_HEIGHT = 700;
-  private static final int CameraViewDistance = 700;
-  private static final int RotateAngle = 5;
+  private static final int CAMERA_VIEW_DISTANCE = 700;
+  private static final int ROTATE_ANGLE = 5;
   private static final int RESOLUTION = 50;
   private static int[][][] array;
   private static boolean pentMode;
@@ -48,29 +48,29 @@ public class Truck extends Application {
         cargo.stack();
 
         PerspectiveCamera camera = new PerspectiveCamera(false);
-        camera.setTranslateZ(-CameraViewDistance);
+        camera.setTranslateZ(-CAMERA_VIEW_DISTANCE);
         scene.setCamera(camera);
 
         EventHandler<KeyEvent> handler = new EventHandler<KeyEvent>() {
            public void handle(KeyEvent e) {
 
              if (e.getCode() == KeyCode.UP) {
-               camera.getTransforms().add(new Rotate(RotateAngle,WINDOW_LENGTH/2,WINDOW_HEIGHT/2,CameraViewDistance,Rotate.X_AXIS));
+               camera.getTransforms().add(new Rotate(ROTATE_ANGLE,WINDOW_LENGTH/2,WINDOW_HEIGHT/2,CAMERA_VIEW_DISTANCE,Rotate.X_AXIS));
              }
              if (e.getCode() == KeyCode.DOWN) {
-               camera.getTransforms().add(new Rotate(-RotateAngle,WINDOW_LENGTH/2,WINDOW_HEIGHT/2,CameraViewDistance,Rotate.X_AXIS));
+               camera.getTransforms().add(new Rotate(-ROTATE_ANGLE,WINDOW_LENGTH/2,WINDOW_HEIGHT/2,CAMERA_VIEW_DISTANCE,Rotate.X_AXIS));
              }
              if (e.getCode() == KeyCode.LEFT) {
-               camera.getTransforms().add(new Rotate(-RotateAngle,WINDOW_LENGTH/2,WINDOW_HEIGHT/2,CameraViewDistance,Rotate.Y_AXIS));
+               camera.getTransforms().add(new Rotate(-ROTATE_ANGLE,WINDOW_LENGTH/2,WINDOW_HEIGHT/2,CAMERA_VIEW_DISTANCE,Rotate.Y_AXIS));
              }
              if (e.getCode() == KeyCode.RIGHT) {
-               camera.getTransforms().add(new Rotate(RotateAngle,WINDOW_LENGTH/2,WINDOW_HEIGHT/2,CameraViewDistance,Rotate.Y_AXIS));
+               camera.getTransforms().add(new Rotate(ROTATE_ANGLE,WINDOW_LENGTH/2,WINDOW_HEIGHT/2,CAMERA_VIEW_DISTANCE,Rotate.Y_AXIS));
              }
              if (e.getCode() == KeyCode.N) {
-               camera.getTransforms().add(new Rotate(RotateAngle,WINDOW_LENGTH/2,WINDOW_HEIGHT/2,CameraViewDistance,Rotate.Z_AXIS));
+               camera.getTransforms().add(new Rotate(ROTATE_ANGLE,WINDOW_LENGTH/2,WINDOW_HEIGHT/2,CAMERA_VIEW_DISTANCE,Rotate.Z_AXIS));
              }
              if (e.getCode() == KeyCode.M) {
-               camera.getTransforms().add(new Rotate(-RotateAngle,WINDOW_LENGTH/2,WINDOW_HEIGHT/2,CameraViewDistance,Rotate.Z_AXIS));
+               camera.getTransforms().add(new Rotate(-ROTATE_ANGLE,WINDOW_LENGTH/2,WINDOW_HEIGHT/2,CAMERA_VIEW_DISTANCE,Rotate.Z_AXIS));
            }
         }
       };
