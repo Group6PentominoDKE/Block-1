@@ -12,6 +12,7 @@ public class test2 {
 		double b = 1;
 		double c = 1;
 		String algorithm = "aha";
+		String shapeChoice ="hah";
 		try
         {
             FileReader fR = new FileReader("values.txt");
