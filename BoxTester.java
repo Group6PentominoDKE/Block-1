@@ -7,7 +7,6 @@ public class BoxTester {
 
   private static final int RESOLUTION = 50;
   private int[][][] array;
-  private int[] coordList = new int[15];
   private Box box;
     /**
     Constructs the Object for a specific array
@@ -28,13 +27,13 @@ public class BoxTester {
       int TEMPL = 0;
       int TEMPH = 0;
       int TEMPW = 0;
-      for(int a=i; a+i<array.length && array[a][j][k] == ID; a++) {
+      for(int a=i; a<array.length && array[a][j][k] == ID; a++) {
         TEMPL++;
       }
-      for(int b=j; b+j<array[0].length && array[i][b][k] == ID; b++) {
+      for(int b=j; b<array[0].length && array[i][b][k] == ID; b++) {
         TEMPH++;
       }
-      for(int c=k; c+k<array[0][0].length && array[i][j][c] == ID; c++) {
+      for(int c=k; c<array[0][0].length && array[i][j][c] == ID; c++) {
         TEMPW++;
       }
       build(TEMPL, TEMPH, TEMPW, i, j, k);
