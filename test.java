@@ -47,6 +47,7 @@ import javafx.geometry.Insets;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.BufferedWriter;
 
 public class test extends Application implements EventHandler<ActionEvent> {
 	// Declare variables, buttons and stuff
@@ -433,8 +434,34 @@ public class test extends Application implements EventHandler<ActionEvent> {
 	    if (event.getSource() == button) {
 	    	L1 = Integer.parseInt(LField.getText());
 	    	System.out.println(L1);
+	    	
+	    	P1 = Integer.parseInt(PField.getText());
+	    	
+	    	T1 = Integer.parseInt(TField.getText());
+	    	
 	    	combChoice = (String) combbox1.getValue();
 	    	System.out.println(combChoice);
+	    	
+			try {
+				BufferedWriter fw1 = new BufferedWriter(new FileWriter("values.txt"));
+				// fw1 = new FileWriter(new File("values.txt"));
+                fw1.write(String.format(Integer.toString(L1)));
+                fw1.newLine();
+				fw1.write(String.format(Integer.toString(P1)));
+				fw1.newLine();
+				fw1.write(String.format(Integer.toString(T1)));
+				fw1.newLine();
+				fw1.write(combChoice);
+				fw1.newLine();
+                fw1.write("LPT");
+                fw1.close();
+
+                } catch (IOException ex1) {
+                    ex1.printStackTrace();
+                 }
+				try {  stop();}
+				catch (Exception ex1) {}
+	    	
 	    	window.setScene(scene);
 	    }
 	    if (event.getSource() == backButton) {
@@ -451,10 +478,19 @@ public class test extends Application implements EventHandler<ActionEvent> {
 	    	System.out.println(combChoice);
 			
 			VA1 = Integer.parseInt(VAfield.getText());
-			FileWriter fw;
+			VB1 = Integer.parseInt(VBfield.getText());
+			VC1 = Integer.parseInt(VCfield.getText());
 			try {
-				fw = new FileWriter(new File("values.txt"));
+				BufferedWriter fw = new BufferedWriter(new FileWriter("values.txt"));
                 fw.write(String.format(Integer.toString(VA1)));
+                fw.newLine();
+                fw.write(String.format(Integer.toString(VB1)));
+                fw.newLine();
+                fw.write(String.format(Integer.toString(VC1)));
+                fw.newLine();
+                fw.write(combChoice);
+                fw.newLine();
+                fw.write("ABC");
 				fw.close();
 
                 } catch (IOException ex) {
