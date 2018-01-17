@@ -5,7 +5,7 @@ This Class builds the box shaped parcels one by one and attaches them to the Obj
 */
 public class BoxTester {
 
-  private static int RES = 50;
+  private static final int RESOLUTION = 50;
   private int[][][] array;
   private int[] coordList = new int[15];
   private Box box;
@@ -59,11 +59,11 @@ public class BoxTester {
     */
     public void build(int x, int y, int z, int i, int j, int k) {
       PhongMaterial material = new PhongMaterial(new Color(Math.random(), Math.random(), Math.random(),1.0));
-      box = new Box(x*RES, y*RES, z*RES);
+      box = new Box(x*RESOLUTION, y*RESOLUTION, z*RESOLUTION);
       box.setMaterial(material);
-      box.setTranslateX(i*RES);
-      box.setTranslateY(j*RES);
-      box.setTranslateZ(k*RES);
+      box.setTranslateX(i*RESOLUTION);
+      box.setTranslateY(j*RESOLUTION);
+      box.setTranslateZ(k*RESOLUTION);
     }
     /**
     Returns the 3D parcel currently attached to this Object
