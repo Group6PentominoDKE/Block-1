@@ -7,9 +7,11 @@ import java.io.IOException;
 public class test2 {
 	public static void main(String[] args)   {
 		Application.launch(test.class, args);
-		test attempt = new test();
 		String thisLine = null;
 		double a = 1;
+		double b = 1;
+		double c = 1;
+		String algorithm = "aha";
 		try
         {
             FileReader fR = new FileReader("values.txt");
