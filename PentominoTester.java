@@ -6,7 +6,7 @@ This Class builds the pentomino shaped parcels one by one and attaches them to t
 */
 public class PentominoTester {
 
-  private static int RES = 50;
+  private static final int RESOLUTION = 50;
   private int[][][] array;
   private int[] coordList = new int[15];
   private int pentCubeCounter = 0;
@@ -62,16 +62,16 @@ public class PentominoTester {
       Box[] listBoxes = new Box[5];
       PhongMaterial material = new PhongMaterial(new Color(Math.random(), Math.random(), Math.random(),1.0));
       for(int t =0; t<=4; t++) {
-        listBoxes[t] = new Box(RES,RES,RES);
+        listBoxes[t] = new Box(RESOLUTION,RESOLUTION,RESOLUTION);
         listBoxes[t].setMaterial(material);
-        listBoxes[t].setTranslateX(coordList[t*3]*RES);
-        listBoxes[t].setTranslateY(coordList[t*3+1]*RES);
-        listBoxes[t].setTranslateZ(coordList[t*3+2]*RES);
+        listBoxes[t].setTranslateX(coordList[t*3]*RESOLUTION);
+        listBoxes[t].setTranslateY(coordList[t*3+1]*RESOLUTION);
+        listBoxes[t].setTranslateZ(coordList[t*3+2]*RESOLUTION);
         pentomino.getChildren().add(listBoxes[t]);
       }
-      pentomino.setTranslateX(i*RES);
-      pentomino.setTranslateY(j*RES);
-      pentomino.setTranslateZ(k*RES);
+      pentomino.setTranslateX(i*RESOLUTION);
+      pentomino.setTranslateY(j*RESOLUTION);
+      pentomino.setTranslateZ(k*RESOLUTION);
     }
     /**
     Returns the 3D parcel currently attached to this Object
