@@ -57,6 +57,9 @@ public class test extends Application implements EventHandler<ActionEvent> {
 	TextField LField;
 	TextField PField;
 	TextField TField;
+	TextField lengthField;
+	TextField widthField;
+	TextField heightField;
 	
 	Button button; // Confirm the choices on LPT menu.
 	Button backButton; // Used for going back to the main menu from the 3D viewing scene.
@@ -83,6 +86,9 @@ public class test extends Application implements EventHandler<ActionEvent> {
 	int L1;
 	int P1;
 	int T1;
+	double length;
+	double width;
+	double height;
 	
 	
 	
@@ -302,10 +308,28 @@ public class test extends Application implements EventHandler<ActionEvent> {
 	    
 	    VCfield = new TextField("0");
 	    GridPane.setConstraints(VCfield, 1, 3);
+		
+	    Label len = new Label("Container length: ");
+	    GridPane.setConstraints(len, 0, 4);
+	    
+	    lengthField = new TextField("16.5");
+	    GridPane.setConstraints(lengthField, 1, 4);
+	    
+	    Label wid = new Label("Container width: ");
+	    GridPane.setConstraints(wid, 0, 5);
+	    
+	    widthField = new TextField("2.5");
+	    GridPane.setConstraints(widthField, 1, 5);
+	    
+	    Label hei = new Label("Container height: ");
+	    GridPane.setConstraints(hei, 0, 6);
+	    
+	    heightField = new TextField("4.0");
+	    GridPane.setConstraints(heightField, 1, 6);	
 	    
 	    GridPane.setConstraints(abcok, 0, 4);
 	    
-	    grid2.getChildren().addAll(VA, VAfield, VB, VBfield, VC, VCfield, abcok, combbox);
+	    grid2.getChildren().addAll(VA, VAfield, VB, VBfield, VC, VCfield, len, lengthField, wid, widthField, hei, heightField, abcok, combbox);
 	    
 	    scene3 = new Scene(grid2, 300, 370);
 	    
@@ -339,6 +363,24 @@ public class test extends Application implements EventHandler<ActionEvent> {
 	    
 	    TField = new TextField("0");
 	    GridPane.setConstraints(TField, 1, 3);
+		
+	    Label leng = new Label("Container length: ");
+	    GridPane.setConstraints(leng, 0, 4);
+	    
+	    lengthField = new TextField("16.5");
+	    GridPane.setConstraints(lengthField, 1, 4);
+	    
+	    Label widt = new Label("Container width: ");
+	    GridPane.setConstraints(widt, 0, 5);
+	    
+	    widthField = new TextField("2.5");
+	    GridPane.setConstraints(widthField, 1, 5);
+	    
+	    Label heig = new Label("Container height: ");
+	    GridPane.setConstraints(heig, 0, 6);
+	    
+	    heightField = new TextField("4.0");
+	    GridPane.setConstraints(heightField, 1, 6);
 	    
 	    VAfield.setOnAction(this);
 	    
@@ -350,7 +392,7 @@ public class test extends Application implements EventHandler<ActionEvent> {
 	    
 	    button.setOnAction(this); // So that handle will look in this class
 	    
-	    grid.getChildren().addAll(L, LField, P, PField, T, TField, button, combbox1);
+	    grid.getChildren().addAll(L, LField, P, PField, T, TField,  leng, lengthField, widt, widthField, heig, heightField, button, combbox1);
 	    
 	    // StackPane layout1 = new StackPane();
 	    // layout1.getChildren().add(button);
@@ -438,6 +480,10 @@ public class test extends Application implements EventHandler<ActionEvent> {
 	    	P1 = Integer.parseInt(PField.getText());
 	    	
 	    	T1 = Integer.parseInt(TField.getText());
+		    
+		length = Double.parseDouble(lengthField.getText());
+	        width = Double.parseDouble(widthField.getText());
+		height = Double.parseDouble(heightField.getText());    
 	    	
 	    	combChoice = (String) combbox1.getValue();
 	    	System.out.println(combChoice);
@@ -454,6 +500,12 @@ public class test extends Application implements EventHandler<ActionEvent> {
 				fw1.write(combChoice);
 				fw1.newLine();
                 fw1.write("LPT");
+                fw1.newLine();
+                fw1.write(String.format(Double.toString(length)));
+                fw1.newLine();
+                fw1.write(String.format(Double.toString(width)));
+                fw1.newLine();
+                fw1.write(String.format(Double.toString(height)));
                 fw1.close();
 
                 } catch (IOException ex1) {
@@ -480,6 +532,9 @@ public class test extends Application implements EventHandler<ActionEvent> {
 			VA1 = Integer.parseInt(VAfield.getText());
 			VB1 = Integer.parseInt(VBfield.getText());
 			VC1 = Integer.parseInt(VCfield.getText());
+		        length = Double.parseDouble(lengthField.getText());
+			width = Double.parseDouble(widthField.getText());
+			height = Double.parseDouble(heightField.getText());
 			try {
 				BufferedWriter fw = new BufferedWriter(new FileWriter("values.txt"));
                 fw.write(String.format(Integer.toString(VA1)));
@@ -491,7 +546,13 @@ public class test extends Application implements EventHandler<ActionEvent> {
                 fw.write(combChoice);
                 fw.newLine();
                 fw.write("ABC");
-				fw.close();
+                fw.newLine();
+                fw.write(String.format(Double.toString(length)));
+                fw.newLine();
+                fw.write(String.format(Double.toString(width)));
+                fw.newLine();
+                fw.write(String.format(Double.toString(height)));
+		fw.close();
 
                 } catch (IOException ex) {
                     ex.printStackTrace();
