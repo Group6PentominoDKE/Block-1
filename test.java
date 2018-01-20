@@ -97,7 +97,7 @@ public class test extends Application implements EventHandler<ActionEvent> {
 		window.setTitle("Container Fitting");
 		
 		
-		
+		/*
 		// Create controls to alter the x and y pivot points of the rotation.
 		final Slider xPivotSlider = createSlider(50, "Best values are 0, 50 or 100");
 		final Slider yPivotSlider = createSlider(50, "Best values are 0, 50 or 100");
@@ -240,6 +240,7 @@ public class test extends Application implements EventHandler<ActionEvent> {
 	    );
 	    layout.setStyle("-fx-background-color: linear-gradient(to bottom, cornsilk, midnightblue); -fx-padding:10; -fx-font-size: 16");
 	    scene = new Scene(layout, 480, 550);
+	    */
 	    // From here on Stuff regarding the buttons and GUI
 	    // First menu where the user chooses if they wanna use abc or lpt shapes.
 	    // Create two combobxes to choose which algorithm will be used.
@@ -327,7 +328,7 @@ public class test extends Application implements EventHandler<ActionEvent> {
 	    heightField = new TextField("4.0");
 	    GridPane.setConstraints(heightField, 1, 6);	
 	    
-	    GridPane.setConstraints(abcok, 0, 4);
+	    GridPane.setConstraints(abcok, 0, 7);
 	    
 	    grid2.getChildren().addAll(VA, VAfield, VB, VBfield, VC, VCfield, len, lengthField, wid, widthField, hei, heightField, abcok, combbox);
 	    
@@ -388,7 +389,7 @@ public class test extends Application implements EventHandler<ActionEvent> {
 	    
 	    button = new Button();
 	    button.setText("Ok");
-	    GridPane.setConstraints(button, 0, 4);
+	    GridPane.setConstraints(button, 0, 7);
 	    
 	    button.setOnAction(this); // So that handle will look in this class
 	    
