@@ -1,12 +1,23 @@
+/**
+ * Class that implements the Dynamic Programming Algorithm
+ * @author Christie Courtnage
+ *
+ */
+
 public class DynamicProgramming {
 	
 	private double[][][][] pointsArray;
 	private Filled[][][][] filledArray;
 	final private int[] DIMENSIONSOFFINALBOX = {8,5,33};
 	
+	/**
+	 * Constructor
+	 * @param inputLetters the types of parcels that will be used i.e a, b, c or l,t,p
+	 */
 	public DynamicProgramming(char[] inputLetters){
 		
 		Pentomino[] allRotations = PentominoFactory.createLetters(inputLetters);
+		int IDCounter = 0;
 		
         for (int i = 0; i < allRotations.length; i++) {
             if(allRotations[i].getType() == 'a' || allRotations[i].getType() == 'l')
@@ -32,16 +43,13 @@ public class DynamicProgramming {
 			for (int z = 0; z< DIMENSIONSOFFINALBOX[2]; z++)
 				for (int y = 0; y< DIMENSIONSOFFINALBOX[1]; y++)
 					for (int x = 0; x< DIMENSIONSOFFINALBOX[0]; x++) {
-						char[][][] currentBox = filledArray[1][z][y][x].getFilled();
-						if (boxFits(allRotations[i].getCharRepresentation(),currentBox)) {
-							if (i == 7) {
-								int h = 1;
-								
-							}							
-							char[][][] firstBox = allRotations[i].getCharRepresentation();
+						IDCounter++;
+						String[][][] currentBox = filledArray[1][z][y][x].getFilled();
+						if (boxFits(allRotations[i].getStringRepresentation(IDCounter),currentBox)) {							
+							String[][][] firstBox = allRotations[i].getStringRepresentation(IDCounter);
 							int[] startCoords = {0,0,currentBox.length-firstBox.length};
 							placeSmallerArrayInArray(currentBox, firstBox, startCoords);							
-							double points = fillBox(currentBox,1, allRotations[i]);							
+							double points = fillBox(currentBox,1, allRotations[i], IDCounter);							
 							if (pointsArray[0][z][y][x] <= points) {
 								pointsArray[1][z][y][x] = points;
 							} else {
@@ -52,13 +60,17 @@ public class DynamicProgramming {
 						} else {
 							pointsArray[1][z][y][x] = pointsArray[0][z][y][x];
 							filledArray[1][z][y][x] = new Filled(filledArray[0][z][y][x].getFilled());
-						}
+						}						
 					}
 			copyLevel();
 			intializeLevel(pointsArray[1], filledArray[1]);
 		}
 	}
 	
+	/**
+	 * Accessor method for the Last element in the last array which is the maximum points
+	 * @return the maximum points gotten by the algorithm
+	 */
 	public double getMaxPoints(){
 		int z = pointsArray[0].length-1;
 		int y = pointsArray[0][0].length-1;
@@ -66,13 +78,69 @@ public class DynamicProgramming {
 		return pointsArray[0][z][y][x];
 	}
 	
-	public char[][][] getMaxFilled(){
-		int z = filledArray[0].length-1;
-		int y = filledArray[0][0].length-1;
-		int x = filledArray[0][0][0].length-1;
-		return filledArray[0][z][y][x].getFilled();
+	/**
+	 * Accesor method for the representation of the cargo space with the maximum points. This method converts the unique string identifier for each parcel to a unique integer.
+	 * @return an integer representation of the cargo space with the maximum points
+	 */
+	public int[][][] getMaxFilled(){
+		int depth = filledArray[0].length;
+		int height = filledArray[0][0].length;
+		int width = filledArray[0][0][0].length;
+		
+		String[][][] maxFilled =  filledArray[0][depth-1][height-1][width-1].getFilled();
+		int[][][] returnFilled = new int[depth][height][width];
+		
+		int ID = 1;
+		
+		class Table {
+			private String stringID;
+			private int intID;
+			
+			public Table(String inStr, int inInt) {
+				stringID = inStr;
+				intID = inInt;
+			}
+			
+			public String getStringID() {
+				return stringID;
+			}
+			
+			public int getIntID() {
+				return intID;
+			}
+						
+		};
+		
+		Table[] table = new Table[300];
+		
+		for (int z = 0; z < depth; z++)
+			for (int y = 0; y< height; y++)
+				for(int x = 0; x < width; x++) {
+					String currentString = maxFilled[z][y][x];
+					if (currentString != "0") {
+						int i = 0;
+						while (table[i] != null && currentString.equals(table[i].getStringID()) == false) {
+							i++;
+						}
+						if (i+1 >= ID) {
+							table[i] = new Table(currentString, ID);
+							ID++;	
+						}
+						returnFilled[z][y][x] = table[i].getIntID();
+					} else {
+						returnFilled[z][y][x] = 0;
+					}
+
+				}
+		
+		return returnFilled;
 	}
 	
+	/**
+	 * Initialised a level of the arrays
+	 * @param points The points array level that will be initialised 
+	 * @param filled The filled array level that will be initialised
+	 */
 	private void intializeLevel(double[][][] points, Filled[][][] filled){
 		for (int z = 0; z< DIMENSIONSOFFINALBOX[2]; z++)
 			for (int y = 0; y< DIMENSIONSOFFINALBOX[1]; y++)
@@ -82,13 +150,16 @@ public class DynamicProgramming {
 				}
 	}
 	
+	/**
+	 * Copies the points and filled array level 1 to level 0
+	 */
 	private void copyLevel(){
 		for (int z = 0; z < DIMENSIONSOFFINALBOX[2]; z++)
 			for (int y = 0; y< DIMENSIONSOFFINALBOX[1]; y++)
 				for (int x = 0; x < DIMENSIONSOFFINALBOX[0]; x++) {
 					pointsArray[0][z][y][x] = pointsArray[1][z][y][x];
-					char[][][] original = filledArray[1][z][y][x].getFilled();
-					char[][][] copy = new char[original.length][original[0].length][original[0][0].length];
+					String[][][] original = filledArray[1][z][y][x].getFilled();
+					String[][][] copy = new String[original.length][original[0].length][original[0][0].length];
 					for (int i = 0; i < original.length; i++)
 						for (int j = 0; j < original[0].length; j++) {
 							System.arraycopy(original[i][j], 0, copy[i][j] , 0, original[0][0].length);
@@ -97,8 +168,13 @@ public class DynamicProgramming {
 				}
 	}
 	
-	
-	private boolean boxFits(char[][][] smallBox, char[][][] bigBox) {
+	/**
+	 * Test whether the smallBox will fit inside bigBox
+	 * @param smallBox the possibly smaller box
+	 * @param bigBox the possibly bigger box
+	 * @return whether the smallBox will fit inside bigBox
+	 */
+	private boolean boxFits(String[][][] smallBox, String[][][] bigBox) {
 		if (smallBox.length > bigBox.length)
 			return false;
 		if (smallBox[0].length > bigBox[0].length)
@@ -107,8 +183,13 @@ public class DynamicProgramming {
 			return false;
 		return true;
 	}
-	
-	private String[][] findDimensions(char[][][] inBox){
+
+	/**
+	 * Find the dimensions and starting coordinates of every possible smaller rectangular prism that will fit inside the cargo space
+	 * @param inBox the cargo space 
+	 * @return A string array containing every starting coordinates and dimension of every possible empty rectangular prism
+	 */
+	private String[][] findDimensions(String[][][] inBox){
 		int height = inBox.length;
 		int length = inBox[0].length;
 		int width = inBox[0][0].length;
@@ -117,7 +198,7 @@ public class DynamicProgramming {
 		for (int z = height -1; z >= 0; z--)
 			for (int y = 0; y < length; y++)
 				for (int x = 0; x < width; x++){
-					if (inBox[z][y][x] == 'E'){ 
+					if (inBox[z][y][x] == "0"){ 
 						String[] possibleAddition = new String[2];
 						possibleAddition[0] = x+"x"+y+"x"+z;
 						possibleAddition[1] =  findEmptyRectangle(x, y, z, inBox);
@@ -132,37 +213,45 @@ public class DynamicProgramming {
 		return finalReturnStringArray;
 	}
 	
-	private String findEmptyRectangle(int x, int y, int z, char[][][] inBox){
+	/**
+	 * Find the dimension of any rectangle from a specific starting point
+	 * @param x the starting x coordinate
+	 * @param y the starting y coordinate
+	 * @param z the starting z coordinate
+	 * @param inBox the current cargo space that is being filled
+	 * @return a sting of the dimensions of the empty rectangular prism seperated by "x"
+	 */
+	private String findEmptyRectangle(int x, int y, int z, String[][][] inBox){
 		int tempX = 0;
 		int tempY = 0;
 		int tempZ = 0;
 
 		do {
 			tempX++;
-		} while(x+tempX < inBox[0][0].length && inBox[z][y][x+tempX] == 'E');
+		} while(x+tempX < inBox[0][0].length && inBox[z][y][x+tempX] == "0");
 		
 		do {
 			tempY++;
-		} while(y+tempY < inBox[0].length && inBox[z][y+tempY][x] == 'E');
+		} while(y+tempY < inBox[0].length && inBox[z][y+tempY][x] =="0");
 		
 		do {
 			tempZ++;
-		} while(z+tempZ < inBox.length && inBox[z+tempZ][y][x] == 'E');
+		} while(z+tempZ < inBox.length && inBox[z+tempZ][y][x] == "0");
 		
 		for (int z1 = z; z1 < z+tempZ-1; z1++)
 			for (int y1 = y; y1 < y+tempY-1; y1++)
 				for (int x1 = x; x1 < x+tempX-1; x1++) {
 					
-					if (x1+1 < inBox[0][0].length && z1 < inBox.length && y1 < inBox[0].length && inBox[z1][y1][x1+1] != 'E'){
+					if (x1+1 < inBox[0][0].length && z1 < inBox.length && y1 < inBox[0].length && inBox[z1][y1][x1+1] != "0"){
 						tempX = x1;
 					}	
 
 
-					if (y1+1 < inBox[0].length && x1+1 < inBox[0][0].length && z1 < inBox.length &&inBox[z1][y1+1][x1] != 'E'){
+					if (y1+1 < inBox[0].length && x1+1 < inBox[0][0].length && z1 < inBox.length &&inBox[z1][y1+1][x1] != "0"){
 						tempY = y1;
 					}
 					
-					if (z1+1 < inBox.length && y1+1 < inBox[0].length && x1+1 < inBox[0][0].length && inBox[z1+1][y1][x1] != 'E'){
+					if (z1+1 < inBox.length && y1+1 < inBox[0].length && x1+1 < inBox[0][0].length && inBox[z1+1][y1][x1] != "0"){
 						tempZ = z1;
 					}						
 				}
@@ -171,6 +260,14 @@ public class DynamicProgramming {
 		
 	} 
 	
+	/**
+	 * Method that either adds to the array, replaces and element in the array or does nothing depending on the size of the potential addition string compared to the other dimensions in the array.
+	 * i.e it adds to the array if there are no similar dimensions, replaces an element if the potential addition is greater that another dimension or does nothing if the potential addition is smaller than all the other dimensions
+	 * @param counter the number of non null elements in the array
+	 * @param array the array of dimensions
+	 * @param potentialAddition the potential addition to the array
+	 * @return the number of non null elements in the array after the method has been executed
+	 */
 	private int addToArray(int counter, String[][] array, String[] potentialAddition) {
 		if (counter > 0){
 			int[] potAdd = splitStringToInt(potentialAddition[1]);
@@ -203,6 +300,12 @@ public class DynamicProgramming {
 		return counter;
 	}
 	
+	/**
+	 * Tests whether the second box is bigger than the first
+	 * @param comp1 the first box
+	 * @param comp2 the second box
+	 * @return whether the second box is bigger than the first
+	 */
 	private boolean isBiggerBox(int[]comp1, int[] comp2) {
 		if (comp1[0] == comp2[0]) {
 			if (comp1[1] < comp2[1] && comp1[2] <= comp2[2]){
@@ -233,6 +336,12 @@ public class DynamicProgramming {
 		return false;
 	}
 	
+	/**
+	 * Tests whether the second box is smaller than the first
+	 * @param comp1 the first box
+	 * @param comp2 the second box
+	 * @return whether the second box is smaller than the first
+	 */
 	private boolean isSmallerBox(int[]comp1, int[] comp2) {
 		if (comp1[0] == comp2[0]) {
 			if (comp1[1] > comp2[1] && comp1[2] >= comp2[2]){
@@ -263,6 +372,13 @@ public class DynamicProgramming {
 		return false;
 	}
 	
+	/**
+	 * Recursive method that finds the dimension that will yield the maximum points
+	 * @param coOrds all the possible dimensions
+	 * @param max the current maximum
+	 * @param currentLevel the level of the points and filled array
+	 * @return the position of the maximum yield dimension in the original array anf the points it will yield
+	 */
 	private double[] findMaxPoints(String[][] coOrds, double[] max, int currentLevel){
 		//Position , Points 
 		if (coOrds.length == 0) {
@@ -292,6 +408,11 @@ public class DynamicProgramming {
 		}	
 	}
 	
+	/**
+	 * Splits a string seperated by "x" int an integer array 
+	 * @param coOrds
+	 * @return and int array of dimensions
+	 */
 	private int[] splitStringToInt(String coOrds) {
 		String[] stringCoOrd = coOrds.split("x");
 		int[] intCoOrd = new int[3];
@@ -301,7 +422,13 @@ public class DynamicProgramming {
 		return intCoOrd;
 	}
 	
-	private void placeSmallerArrayInArray(char[][][] bigArray, char[][][] smallArray, int[] startCoords) {
+	/**
+	 * Copies a smaller array into a bigger array from a starting point
+	 * @param bigArray the array that is being copied to 
+	 * @param smallArray the array that is being coppied
+	 * @param startCoords the position in the big array where the copying will start
+	 */
+	private void placeSmallerArrayInArray(String[][][] bigArray, String[][][] smallArray, int[] startCoords) {
 		int height = smallArray.length;
 		int length = smallArray[0].length;
 		int width = smallArray[0][0].length;
@@ -312,7 +439,15 @@ public class DynamicProgramming {
 			}
 	}
 	
-	private double fillBox(char[][][] box, int currentLevel, Pentomino currentPent ) {
+	/**
+	 * Recursively fills a cargo space with previously calculated points
+	 * @param box the current cargo space
+	 * @param currentLevel the current level in the points and filled array
+	 * @param currentPent the current parcel that is being places
+	 * @param ID the uniquely identifying number for this iteration 
+	 * @return the number of points the box contains
+	 */
+	private double fillBox(String[][][] box, int currentLevel, Pentomino currentPent, int ID) {
 		String[][] newDimensions = findDimensions(box);		
 		if (newDimensions.length > 0) {
 			double[] max = {0,0};
@@ -321,17 +456,35 @@ public class DynamicProgramming {
 				return currentPent.getValue();
 			} else {
 				int[] intDimension = splitStringToInt(newDimensions[(int) maxPoints[0]][1]);
-				char[][][] maxSmallBox = filledArray[currentLevel][intDimension[2]-1][intDimension[1]-1][intDimension[0]-1].getFilled();
+				String[][][] maxSmallBox = filledArray[currentLevel][intDimension[2]-1][intDimension[1]-1][intDimension[0]-1].getFilled();
+				addIDToBox(maxSmallBox, ID);
 				int[] intStartCoords = splitStringToInt(newDimensions[(int) maxPoints[0]][0]);
 				placeSmallerArrayInArray(box,maxSmallBox,intStartCoords);
-				return maxPoints[1] + fillBox(box,currentLevel, currentPent);
+				return maxPoints[1] + fillBox(box,currentLevel, currentPent, ID);
 			}			
 		}else {
 			return currentPent.getValue();
 		}
 	}
 	
-	private void printMatrix(char[][][] matrix) {
+	/**
+	 * Adds the current id to the already existing IDs in the box
+	 * @param box the current cargo space
+	 * @param id the uniquely identifying number for this iteration  
+	 */
+	private void addIDToBox(String[][][] box, int id){
+		for (int z = 0; z < box.length; z++)
+			for ( int y = 0; y < box[0].length; y++)
+				for (int x = 0; x < box[0][0].length; x++){
+					if (box[z][y][x] != "0") {
+						String addition = box[z][y][x];
+						addition = id+addition;
+						box[z][y][x] = addition;						
+					}
+				}
+	}
+	
+	private void printMatrix(int[][][] matrix) {
 		for (int i = 0; i < matrix.length; i++) {
 			for (int j = 0; j < matrix[0].length; j++) {
 				for (int k =  0; k < matrix[0][0].length; k++) {
